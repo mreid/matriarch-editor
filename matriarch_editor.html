@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Moog Matriarch Global Settings Editor</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="css/editor.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+            integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+            crossorigin="anonymous"></script>
+    <script src="js/JZZ.js"></script>
+    <script src="js/midi.js"></script>
+    <script src="js/parameters.js"></script>
+    <script src="js/ui.js"></script>
+    <script>
+        $( document ).ready(function() {
+            createTable(params);
+            open_midi_out();
+            open_midi_in();
+
+            let param_ids = [...Array(74).keys()]
+            scan_midi(param_ids, 100);
+        });
+    </script>
+</head>
+
+<body>
+<h1>Matriarch Global Settings Editor</h1>
+<p>
+    This is a settings editor for the <a href="https://www.moogmusic.com/products/matriarch">Moog Matriarch</a>
+    synthesizer. It uses the SysEx messages introduced in the v1.2.0 firmware update to read/write the settings.
+    Please refer to the Moog Matriarch
+    <a href="https://api.moogmusic.com/sites/default/files/2020-09/Matriarch_V1.2.0_Firmware_Notes.pdf">
+        v1.2.0 Firmware Notes PDF </a>
+    for more details.
+    The <a href="https://github.com/mreid/matriarch-editor">source code is available on GitHub</a>.
+    It is made available with no warranty or guarantees, and is in no way affiliated with Moog Music.
+    <strong>Use at your own risk!</strong>.
+</p>
+<p>
+    For this editor to work, <strong>your browser will need to support the Web MIDI API</strong> and permissions
+    will need to be correctly.
+</p>
+<ul>
+<li>For the Chrome browser, you will need to "Allow" MIDI access when the pop-up requests it.</li>
+<li>For Safari and Firefox, please follow the instructions at the
+    <a href="https://jazz-soft.net/download/web-midi/">Web MIDI API extension</a> page to install the
+    appropriate extensions.</li>
+</ul>
+<p>
+    When this page is loaded, the MIDI API will look for any MIDI In/Out devices with the word "Matriarch"
+    in their name and connect to the first of these that is found. Once connected, the global settings are
+    scanned. Each of the 74 settings in the table below will switch from a grey to white background if a
+    value is successfully read from the connected Matriarch. If some rows remain greyed out, try reloading the
+    page to rescan.
+</p>
+<p>
+    Use the selection boxes or sliders to select a new value from the list. The factory defaults are indicated
+    with the text "(Default)", along with any explanatory notes. When a new value is selected it is immediate
+    sent to the Matriarch. The row for the setting will turn grey and then white again indicated that the value
+    was successfully updated.
+</p>
+<p>
+    This editor was developed over a weekend by Mark Reid.
+    If you like it, please check out some of the music he has made using the Matriarch on
+    <a href="https://twitter.com/mdreid">Twitter</a>,
+    <a href="https://www.instagram.com/mdreid/">Instagram</a>,
+    <a href="https://www.youtube.com/user/mdreid/videos">YouTube</a>,
+    and <a href="https://soundcloud.com/mdreid-1">SoundCloud</a>.
+</p>
+<hr/>
+<div id="midiEngineStatus">
+    <strong>MIDI-Out</strong>: <span id="midiOutName">NONE</span>
+    <strong>MIDI-In</strong>: <span id="midiInName">NONE</span>
+    <div id="midiError"></div>
+</div>
+<table id="parameters">
+    <thead>
+    <tr>
+        <th>Parameter ID</th>
+        <th>Parameter Name</th>
+        <th>Values</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+</body>
+</html>
