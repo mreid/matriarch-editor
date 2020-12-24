@@ -1,6 +1,11 @@
 var midi_out;
 var midi_in;
 
+// { [param_id]: true/false }
+// true => request sent, waiting for param
+// false => not waiting for param
+var params_waiting = {};
+
 async function open_midi_out() {
     midi_out = undefined;
     $('#midiOutName').html('No Connection');
@@ -35,6 +40,7 @@ async function open_midi_in() {
 async function update_param(msg) {
     if(msg.isSysEx()) {
         let param_id = msg[4];
+        params_waiting[param_id] = false;
         let param_str = 'param_' + param_id;
 
         let msb = msg[5];
@@ -59,6 +65,7 @@ function set_param(param_id, value) {
 function read_param(param_id) {
     let msg = [0xf0, 0x04, 0x17, 0x3e, param_id, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x7f, 0xf7]
     console.log('Sending read request for Parameter ' + param_id);
+    params_waiting[param_id] = true;
     midi_out.send(msg);
 }
 
@@ -72,5 +79,8 @@ async function scan_midi(param_ids, wait_ms) {
         read_param(param_id);
         await sleep(wait_ms);
     }
+    return Object.keys(params_waiting)
+        .map(k => ({k, v: params_waiting[k]}))
+        .filter(({v}) => v) // keep ones we are still waiting for.
+        .map(({k}) => k);
 }
-

@@ -30,7 +30,12 @@
             }
 
             let param_ids = [...Array(74).keys()]
-            scan_midi(param_ids, 100);
+            while (true) {
+                param_ids = await scan_midi(param_ids, 100);
+                if (!param_ids.length) {
+                    break;
+                }
+            }
         });
     </script>
 </head>
@@ -63,8 +68,7 @@
     When this page is loaded, the MIDI API will look for any MIDI In/Out devices with the word "Matriarch"
     in their name and connect to the first of these that is found. Once connected, the global settings are
     scanned. Each of the 74 settings in the table below will switch from a grey to white background if a
-    value is successfully read from the connected Matriarch. If some rows remain greyed out, try reloading the
-    page to rescan.
+    value is successfully read from the connected Matriarch.
 </p>
 <p>
     Use the selection boxes or sliders to select a new value from the list. The factory defaults are indicated
