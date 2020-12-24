@@ -11,7 +11,7 @@ function Param(id, name, values, notes) {
     this.values.attr('id', 'param_'+id);
     this.values.change(async function() {
         console.log('Parameter ' + id + ' changed to ' + $(this).val());
-        $('#row_'+id).attr('class', 'disabled');
+        $('#row_'+id).attr('class', 'disabled').find('select,input').prop('disabled', true);
         set_param(id, parseInt($(this).val()));
         await sleep(100);
         while(true) {
@@ -25,11 +25,11 @@ function Param(id, name, values, notes) {
 }
 
 function Slider(start, end) {
-    return $('<input/>', {class: 'custom-range', type: 'range', tooltip: 'always', min: start, max: end});
+    return $('<input/>', {class: 'custom-range', type: 'range', tooltip: 'always', min: start, max: end, disabled: true});
 }
 
 function Options(values, default_value, default_note) {
-    let selector = $('<select/>', {class: 'custom-select'});
+    let selector = $('<select/>', {class: 'custom-select', disabled: true});
     let default_str = 'Default';
     if(default_note) { default_str += ' – ' + default_note}
     for(let i = 0; i < values.length; i++) {

@@ -48,7 +48,7 @@ async function update_param(msg) {
         let value = 128 * msb + lsb;
 
         $('#'+param_str).val(value);
-        $('#row_'+param_id).attr('class', 'enabled');
+        $('#row_'+param_id).attr('class', 'enabled').find('select,input').prop('disabled', false);
         console.log('Set Parameter' + param_id + ' to ' + value);
     }
 }
