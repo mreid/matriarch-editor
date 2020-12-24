@@ -25,12 +25,15 @@ function Param(id, name, values, notes) {
     })
 }
 
-function Slider(start, end) {
-    return $('<input/>', {class: 'custom-range', type: 'range', tooltip: 'always', min: start, max: end, disabled: true});
+function Slider(start, end, default_value) {
+    let input = $('<input/>', {class: 'custom-range', type: 'range', tooltip: 'always', min: start, max: end, disabled: true});
+    input[0].default_value = default_value;
+    return input;
 }
 
 function Options(values, default_value, default_note) {
     let selector = $('<select/>', {class: 'custom-select', disabled: true});
+    selector[0].default_value = default_value;
     let default_str = 'Default';
     if(default_note) { default_str += ' – ' + default_note}
     for(let i = 0; i < values.length; i++) {

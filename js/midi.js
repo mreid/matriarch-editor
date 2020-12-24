@@ -48,7 +48,9 @@ async function update_param(msg) {
         let value = 128 * msb + lsb;
 
         $('#'+param_str).val(value);
-        $('#row_'+param_id).removeClass('disabled').find('select,input').prop('disabled', false);
+        const row = $('#row_'+param_id);
+        row.removeClass('disabled').find('select,input').prop('disabled', false);
+        row[0].update_defaultness();
         console.log('Set Parameter' + param_id + ' to ' + value);
     }
 }
