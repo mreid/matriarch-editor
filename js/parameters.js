@@ -11,7 +11,8 @@ function Param(id, name, values, notes) {
     this.values.attr('id', 'param_'+id);
     this.values.change(async function() {
         console.log('Parameter ' + id + ' changed to ' + $(this).val());
-        $('#row_'+id).attr('class', 'disabled').find('select,input').prop('disabled', true);
+        const row = $('#row_'+id);
+        row.addClass('disabled').find('select,input').prop('disabled', true);
         set_param(id, parseInt($(this).val()));
         await sleep(100);
         while(true) {
