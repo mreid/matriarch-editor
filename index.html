@@ -29,7 +29,7 @@
                 await sleep(1000);
             }
 
-            let param_ids = [...Array(74).keys()]
+            let param_ids = [...Object.values(params).map(p => p.id)]
             while (true) {
                 param_ids = await scan_midi(param_ids, 100);
                 if (!param_ids.length) {
@@ -75,6 +75,10 @@
     with the text "(Default)", along with any explanatory notes. When a new value is selected it is immediate
     sent to the Matriarch. The row for the setting will turn grey and then white again indicated that the value
     was successfully updated.
+</p>
+<p>
+    There are a number of parameters that de-facto resets to another default value than the officially
+    documented default value. They are marked in the list (this was found with firmware 1.2.3).
 </p>
 <p>
     This editor was developed over a weekend by Mark Reid.
