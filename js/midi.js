@@ -73,6 +73,10 @@ async function sleep(time_ms) {
     return new Promise(r => setTimeout(r, time_ms));
 }
 
+function is_waiting_for(param_id) {
+    return params_waiting[param_id];
+}
+
 async function scan_midi(param_ids, wait_ms) {
     await sleep(500);
     for(let param_id of param_ids) {

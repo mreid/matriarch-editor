@@ -14,7 +14,13 @@ function Param(id, name, values, notes) {
         $('#row_'+id).attr('class', 'disabled');
         set_param(id, parseInt($(this).val()));
         await sleep(100);
-        read_param(id);
+        while(true) {
+            read_param(id);
+            await sleep(100);
+            if (!is_waiting_for(id)) {
+                break;
+            }
+        }
     })
 }
 
