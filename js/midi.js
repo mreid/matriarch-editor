@@ -1,21 +1,35 @@
 var midi_out;
 var midi_in;
 
-function open_midi_out() {
+async function open_midi_out() {
     midi_out = undefined;
     $('#midiOutName').html('No Connection');
     midi_out = JZZ({sysex:true}).openMidiOut(/Matriarch/)
         .or(function(){ $('#midiOutName').html('Cannot find Matriarch!'); })
         .and(function(){ $('#midiOutName').html(this.name()); console.log(this.info()); });
+    try {
+        await midi_out;
+        return true;
+    } catch (e) {
+        console.warn(e.message);
+        return false;
+    }
 }
 
-function open_midi_in() {
+async function open_midi_in() {
     midi_in = undefined;
     $('#midiInName').html('No Connection');
     midi_in = JZZ({sysex:true}).openMidiIn(/Matriarch/)
         .or(function(){ $('#midiInName').html('Cannot find Matriarch!'); })
         .and(function(){ $('#midiInName').html(this.name()); console.log(this.info());})
         .connect(update_param);
+    try {
+        await midi_in;
+        return true;
+    } catch (e) {
+        console.warn(e.message);
+        return false;
+    }
 }
 
 async function update_param(msg) {

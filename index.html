@@ -17,10 +17,17 @@
     <script src="js/parameters.js"></script>
     <script src="js/ui.js"></script>
     <script>
-        $( document ).ready(function() {
+        $( document ).ready(async function() {
             createTable(params);
-            open_midi_out();
-            open_midi_in();
+            while (true) {
+                const out_ok = await open_midi_out();
+                const in_ok = await open_midi_in();
+
+                if (out_ok && in_ok) {
+                    break
+                }
+                await sleep(1000);
+            }
 
             let param_ids = [...Array(74).keys()]
             scan_midi(param_ids, 100);
