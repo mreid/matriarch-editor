@@ -11,19 +11,29 @@ function Param(id, name, values, notes) {
     this.values.attr('id', 'param_'+id);
     this.values.change(async function() {
         console.log('Parameter ' + id + ' changed to ' + $(this).val());
-        $('#row_'+id).attr('class', 'disabled');
+        const row = $('#row_'+id);
+        row.addClass('disabled').find('select,input').prop('disabled', true);
         set_param(id, parseInt($(this).val()));
         await sleep(100);
-        read_param(id);
+        while(true) {
+            read_param(id);
+            await sleep(100);
+            if (!is_waiting_for(id)) {
+                break;
+            }
+        }
     })
 }
 
-function Slider(start, end) {
-    return $('<input/>', {class: 'custom-range', type: 'range', tooltip: 'always', min: start, max: end});
+function Slider(start, end, default_value) {
+    let input = $('<input/>', {class: 'custom-range', type: 'range', tooltip: 'always', min: start, max: end, disabled: true});
+    input[0].default_value = default_value;
+    return input;
 }
 
 function Options(values, default_value, default_note) {
-    let selector = $('<select/>', {class: 'custom-select'});
+    let selector = $('<select/>', {class: 'custom-select', disabled: true});
+    selector[0].default_value = default_value;
     let default_str = 'Default';
     if(default_note) { default_str += ' – ' + default_note}
     for(let i = 0; i < values.length; i++) {
@@ -41,7 +51,7 @@ function Range(start, end) {
 let params = [
     new Param(0, 'Unit ID', Options(Range(0, 15), 0)),
     new Param(1, 'Tuning Scale', Options(Range(0, 31), 0, '12-TET')),
-    new Param(2, 'Knob Mode', Options(['Snap', 'Pass-Thru', 'Relative'], 2)),
+    new Param(2, 'Knob Mode', Options(['Snap', 'Pass-Thru', 'Relative'], 0), 'Actual default different to documented'),
     new Param(3, 'Note Priority', Options(['Low', 'High', 'Last Note'], 2)),
     new Param(4, 'Transmit Program Change', Options(['Off', 'On'], 0)),
     new Param(5, 'Receive Program Change', Options(['Off', 'On'], 1)),
@@ -63,17 +73,17 @@ let params = [
     new Param(15, 'Output 14-bit MIDI CCs', Options(['Off', 'On'], 0)),
     new Param(16, 'Local Control: Keys', Options(['Off', 'On'], 1)),
     new Param(17, 'Local Control: Wheels', Options(['Off', 'On'], 1)),
-    new Param(18, 'Local Control: Panel', Options(['Off', 'On'], 1)),
+    new Param(18, 'Local Control: Panel', Options(['Off', 'On'], 0), 'Actual default different to documented'),
     new Param(19, 'Local Control: Arp/Seq', Options(['Off', 'On'], 1)),
     new Param(20, 'Sequence Transpose Mode',
         Options(['Relative to First Note', 'Relative to Middle C'], 0)),
-    new Param(21, 'Arp/Seq Keyed Timing Reset', Options(['Off', 'On'], 0)),
+    new Param(21, 'Arp/Seq Keyed Timing Reset', Options(['Off', 'On'], 1), 'Actual default different to documented'),
     new Param(22, 'Arp FW/BW Repeats',
         Options(["Don't Repeat end notes", 'Repeat end notes'], 1)),
-    new Param(23, 'Arp/Seq Swing', Slider(0, 16838)),
+    new Param(23, 'Arp/Seq Swing', Slider(0, 16838, 8192)),
     new Param(24, 'Sequence Keyboard Control', Options(['Off', 'On'], 1)),
     new Param(25, 'Delay Sequence Change', Options(['Off', 'On'], 0)),
-    new Param(26, 'Sequence Latch Restart', Options(['Off', 'On'], 0)),
+    new Param(26, 'Sequence Latch Restart', Options(['Off', 'On'], 1), 'Actual default different to documented'),
     new Param(27, 'Arp/Seq Clock Input Mode',
         Options(['Clock', 'Step-Advance Trigger'], 0)),
     new Param(28, 'Arp/Seq Clock Output',
@@ -96,7 +106,7 @@ let params = [
     new Param(40, 'Glide Type',
         Options(['Linear Constant Rate', 'Linear Constant Time', 'Exponential'], 0)),
     new Param(41, 'Gated Glide', Options(['Off', 'On'], 1)),
-    new Param(42, 'Legato Glide', Options(['Off', 'On'], 1)),
+    new Param(42, 'Legato Glide', Options(['Off', 'On'], 0), 'Actual default different to documented'),
     new Param(43, 'Osc 2 Freq Knob Range',
         Options(Range(0, 24).map(i => i + ' Semitones'), 7)),
     new Param(44, 'Osc 3 Freq Knob Range',
@@ -112,7 +122,7 @@ let params = [
     new Param(52, 'Delay Filter Brightness', Options(['Dark', 'Bright'], 1)),
     new Param(53, 'Delay CV Sync-Bend', Options(['Off', 'On'], 0)),
     new Param(54, 'Tap-Tempo Clock Division Persistence', Options(['Off', 'On'], 0)),
-    new Param(55, 'Paraphony Mode', Options(['Mono', 'Duo', 'Quad'], 0)),
+    new Param(55, 'Paraphony Mode', Options(['Mono', 'Duo', 'Quad'], 2), 'Actual default different to documented'),
     new Param(56, 'Paraphonic Unison', Options(['Off', 'On'], 0)),
     new Param(57, 'Multi Trig', Options(['Off', 'On'], 0)),
     new Param(58, 'Pitch Variance',
@@ -128,12 +138,13 @@ let params = [
     new Param(67, 'Round-Robin Mode',
         Options(['Off', 'First-Note Reset', 'On'], 1)),
     new Param(68, 'Restore Stolen Voices', Options(['Off', 'On'], 0)),
-    new Param(69, 'Update Unison on Note-Off', Options(['Off', 'On']), 0),
+    new Param(69, 'Update Unison on Note-Off', Options(['Off', 'On'], 0)),
     new Param(70, 'Mod Oscillator Square Wave Polarity',
         Options(['Unipolar', 'Bipolar'], 1)),
-    new Param(71, 'Noise Filter Cutoff', Slider(0, 16383)),
+    new Param(71, 'Noise Filter Cutoff', Slider(0, 16383, 0), 'Actual default different to documented'),
     new Param(72, 'Arp/Seq Random Repeats',
         Options(['no repeating notes/steps in RND direction',
             'allow repeating notes (true random)'], 1)),
-    new Param(73, 'ARP/SEQ CV OUT Mirrors KB CV', Options(['Off', 'On'], 0))
+    new Param(73, 'ARP/SEQ CV OUT Mirrors KB CV', Options(['Off', 'On'], 0)),
+    new Param(74, 'KB CV OUT Mirrors ARP/SEQ CV', Options(['Off', 'On'], 0)),
 ];

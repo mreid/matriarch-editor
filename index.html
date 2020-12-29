@@ -17,13 +17,25 @@
     <script src="js/parameters.js"></script>
     <script src="js/ui.js"></script>
     <script>
-        $( document ).ready(function() {
+        $( document ).ready(async function() {
             createTable(params);
-            open_midi_out();
-            open_midi_in();
+            while (true) {
+                const out_ok = await open_midi_out();
+                const in_ok = await open_midi_in();
 
-            let param_ids = [...Array(74).keys()]
-            scan_midi(param_ids, 100);
+                if (out_ok && in_ok) {
+                    break
+                }
+                await sleep(1000);
+            }
+
+            let param_ids = [...Object.values(params).map(p => p.id)]
+            while (true) {
+                param_ids = await scan_midi(param_ids, 100);
+                if (!param_ids.length) {
+                    break;
+                }
+            }
         });
     </script>
 </head>
@@ -56,14 +68,17 @@
     When this page is loaded, the MIDI API will look for any MIDI In/Out devices with the word "Matriarch"
     in their name and connect to the first of these that is found. Once connected, the global settings are
     scanned. Each of the 74 settings in the table below will switch from a grey to white background if a
-    value is successfully read from the connected Matriarch. If some rows remain greyed out, try reloading the
-    page to rescan.
+    value is successfully read from the connected Matriarch.
 </p>
 <p>
     Use the selection boxes or sliders to select a new value from the list. The factory defaults are indicated
     with the text "(Default)", along with any explanatory notes. When a new value is selected it is immediate
     sent to the Matriarch. The row for the setting will turn grey and then white again indicated that the value
     was successfully updated.
+</p>
+<p>
+    There are a number of parameters that de-facto resets to another default value than the officially
+    documented default value. They are marked in the list (this was found with firmware 1.2.3).
 </p>
 <p>
     This editor was developed over a weekend by Mark Reid.

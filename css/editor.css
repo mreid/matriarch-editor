@@ -22,7 +22,7 @@ table th {
 table th:first-child { border-left-color: black; }
 table th:last-child { border-right-color: black; }
 table tbody tr.disabled { background-color: silver; }
-table tbody tr.enabled { background-color: white; }
+table tbody tr.non_default { background-color: orange; }
 table td { border: 2px solid black; }
 .param_id { width: 10em; font-weight: bold; }
 /*.param_name { width: 30%; }*/
