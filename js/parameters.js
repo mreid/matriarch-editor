@@ -80,7 +80,7 @@ let params = [
     new Param(21, 'Arp/Seq Keyed Timing Reset', Options(['Off', 'On'], 1), 'Actual default different to documented'),
     new Param(22, 'Arp FW/BW Repeats',
         Options(["Don't Repeat end notes", 'Repeat end notes'], 1)),
-    new Param(23, 'Arp/Seq Swing', Slider(0, 16838, 8192)),
+    new Param(23, 'Arp/Seq Swing', Slider(0, 16383, 8192)),
     new Param(24, 'Sequence Keyboard Control', Options(['Off', 'On'], 1)),
     new Param(25, 'Delay Sequence Change', Options(['Off', 'On'], 0)),
     new Param(26, 'Sequence Latch Restart', Options(['Off', 'On'], 1), 'Actual default different to documented'),
