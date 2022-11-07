@@ -9,7 +9,7 @@ receive those SysEx messages in your browser. Add a little
 [jQuery](https://jquery.com) and [Bootstrap](https://getbootstrap.com) and we've got ourselves
 an editor!
 
-You can use the [editor here](https://mreid.github.io/matriarch-editor/index.html). 
+You can use the [editor here](https://mark.reid.name/matriarch-editor/index.html). 
 You will need to configure some Web MIDI API extensions for Firefox and Safari. For Chrome you will need to
 allow Chrome access to MIDI on your computer when the pop-up requests it. There are instructions in the
 editor page itself.
