@@ -147,4 +147,5 @@ let params = [
             'allow repeating notes (true random)'], 1)),
     new Param(73, 'ARP/SEQ CV OUT Mirrors KB CV', Options(['Off', 'On'], 0)),
     new Param(74, 'KB CV OUT Mirrors ARP/SEQ CV', Options(['Off', 'On'], 0)),
+    new Param(75, 'MIDI Velocity Curves', Options(['Base', 'Linear', 'Stretched', 'Compressed'], 0)),
 ];
