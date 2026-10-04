@@ -25,5 +25,8 @@ table tbody tr.disabled { background-color: silver; }
 table tbody tr.non_default { background-color: orange; }
 table td { border: 2px solid black; }
 .param_id { width: 10em; font-weight: bold; }
+.param_value_with_display { display: flex; align-items: center; gap: 0.75em; }
+.param_value_with_display input[type="range"] { flex: 1; }
+.param_display_value { color: #555; font-weight: normal; min-width: 3em; text-align: right; }
 /*.param_name { width: 30%; }*/
 #midiError { color: darkred; }
