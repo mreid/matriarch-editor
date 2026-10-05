@@ -3,14 +3,16 @@ function Value(id, name) {
     this.name = name;
 }
 
-function Param(id, name, values, notes) {
+function Param(id, name, values, notes, display_value) {
     this.id = id;
     this.name = name;
     this.values = values;
     this.notes = notes;
+    this.display_value = display_value;
     this.values.attr('id', 'param_'+id);
     this.values.change(async function() {
         console.log('Parameter ' + id + ' changed to ' + $(this).val());
+        $('#row_'+id)[0].update_display_value();
         const row = $('#row_'+id);
         row.addClass('disabled').find('select,input').prop('disabled', true);
         set_param(id, parseInt($(this).val()));
@@ -25,9 +27,17 @@ function Param(id, name, values, notes) {
     })
 }
 
-function Slider(start, end, default_value) {
-    let input = $('<input/>', {class: 'custom-range', type: 'range', tooltip: 'always', min: start, max: end, disabled: true});
+function Slider(start, end, default_value, snap, step) {
+    let input = $('<input/>', {class: 'custom-range', type: 'range', tooltip: 'always', min: start, max: end, step: step || 1, disabled: true});
     input[0].default_value = default_value;
+    if (snap) {
+        input.on('input', function() {
+            const value = parseInt($(this).val());
+            if (Math.abs(value - snap.value) <= snap.threshold) {
+                $(this).val(snap.value);
+            }
+        });
+    }
     return input;
 }
 
@@ -46,6 +56,15 @@ function Options(values, default_value, default_note) {
 
 function Range(start, end) {
     return [...Array(end - start + 1).keys()].map(i => i + start);
+}
+
+function SwingPercent(value) {
+    const min_raw = 819;
+    const max_raw = 15565;
+    const min_percent = 22;
+    const max_percent = 78;
+    const percent = min_percent + (parseInt(value) - min_raw) * (max_percent - min_percent) / (max_raw - min_raw);
+    return Math.round(percent / 2) * 2;
 }
 
 let params = [
@@ -80,7 +99,7 @@ let params = [
     new Param(21, 'Arp/Seq Keyed Timing Reset', Options(['Off', 'On'], 1), 'Actual default different to documented'),
     new Param(22, 'Arp FW/BW Repeats',
         Options(["Don't Repeat end notes", 'Repeat end notes'], 1)),
-    new Param(23, 'Arp/Seq Swing', Slider(819, 15565, 8192)),
+    new Param(23, 'Arp/Seq Swing', Slider(819, 15565, 8192, {value: 8192, threshold: 256}), undefined, value => SwingPercent(value) + '%'),
     new Param(24, 'Sequence Keyboard Control', Options(['Off', 'On'], 1)),
     new Param(25, 'Delay Sequence Change', Options(['Off', 'On'], 0)),
     new Param(26, 'Sequence Latch Restart', Options(['Off', 'On'], 1), 'Actual default different to documented'),
